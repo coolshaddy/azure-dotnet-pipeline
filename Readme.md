@@ -1,4 +1,4 @@
-| Language | Framework | Platform | Author |
+#| Language | Framework | Platform | Author |
 | -------- | -------- |--------|--------|
 | ASP.NET Core | .NET Core 1.1 | Azure Web App, Virtual Machines |
 
