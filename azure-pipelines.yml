@@ -1,66 +1,61 @@
-# ASP.NET Core (.NET Framework)
-# Build and test ASP.NET Core projects targeting the full .NET Framework.
-# Add steps that publish symbols, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-
+#Trigger builds only on the master branch
+#Add additional options for more branches to target
 trigger:
 - master
 
-pool:
-  vmImage: 'windows-latest'
+#Run build for all Pull Requests targetting master branch
+#Add additional options for more branches to target
+pr:
+- master
+
+#Create a unique name for the build based on your project requirements
+#BuildID is the unique ID for the build
+name: $(Year:yy).$(Month).$(DayOfMonth).$(BuildID)-$(SourceBranchName)
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  AgentImage: "windows-latest" #See available agent images: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
+  system.debug: true #Setting debug to true will add extra output to the logs but can be useful while trying to determine full reason for failures
+  BuildConfiguration: 'Release'
 
-steps:
-#- task: NuGetToolInstaller@1
+stages:
+- stage: 'Build_Stage' #Stage name cannot have spaces
+  displayName: 'Build' #Name displayed when viewing in Azure DevOps
+  jobs:
+  - job: 'Build_Job' #Job name cannot have spaces
+    displayName: 'Application Build' #Name displayed when viewing in Azure DevOps
+    pool:
+      vmImage: $(AgentImage) #See available agent images: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
+    steps:
+    - task: DotNetCoreInstaller@1
+      displayName: 'Use DotNet Core SDK'
+      inputs:
+        version: 3.x
 
-#- task: NuGetCommand@2
-#  inputs:
-#    restoreSolution: '$(solution)'
+    - task: DotNetCoreCLI@2
+      displayName: Publish App
+      inputs:
+        command: publish  #The publish command does a restore, build and creates a zip file so no need to add extra steps
+        publishWebProjects: true
+        zipAfterPublish: false
+        projects: '**/BasicCoreApp/*.csproj'
+        arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)/application'
 
-#- task: VSBuild@1
-#  inputs:
-#    solution: '$(solution)'
-#    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-#    platform: '$(buildPlatform)'
-#    configuration: '$(buildConfiguration)'
+    - task: DotNetCoreCLI@2
+      displayName: Test
+      inputs:
+        command: test #Don't forget to test!
+        projects: '**/*.Tests.csproj'
+        arguments: '--configuration $(BuildConfiguration)'
 
-#- task: VSTest@2
-#  inputs:
-#    platform: '$(buildPlatform)'
-#    configuration: '$(buildConfiguration)'
+    - task: ArchiveFiles@2
+      displayName: 'Archive build'
+      inputs:
+        rootFolderOrFile: '$(build.artifactstagingdirectory)/application'
+        includeRootFolder: false
+        archiveFile: '$(build.artifactstagingdirectory)/app/application.zip'
 
-#- task: PublishBuildArtifacts@1
-#  inputs:
-#    pathToPublish: '$(Build.ArtifactStagingDirectory)'
-#    artifactName: 'AEYCBuild'
-#    publishLocation: 'Container' ##########Doubful option ##
-
-#- task: DownloadBuildArtifacts@0
-#  inputs:
-#    buildType: 'current'
-#    downloadType: 'single'
-#    artifactName: 'AEYCBuild'
-#   downloadPath: '$(System.ArtifactsDirectory)'
-- task: DotNetCoreCLI@2
-  displayName: Publish App
-  inputs:
-    command: publish
-    projects: '$(solution)'
-    arguments: '--configuration Release --output $(build.artifactstagingdirectory)/application'
-
-- task: DotNetCoreCLI@2
-  displayName: Test
-  inputs:
-    command: test #Don't forget to test!
-    projects: '**/*.Tests.csproj'
-    arguments: '--configuration Release'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact'
-  inputs:
-    pathtoPublish: '$(build.artifactstagingdirectory)' #Publish (different from the command used above) allows the artifact to be used in later jobs
-    artifactName: 'app' 
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact'
+      inputs:
+        pathtoPublish: '$(build.artifactstagingdirectory)\app\application.zip' #Publish (different from the command used above) allows the artifact to be used in later jobs
+        artifactName: 'app'
