@@ -56,5 +56,5 @@ steps:
   displayName: Test
   inputs:
     command: test #Don't forget to test!
-    projects: '**/*.Tests.csproj'
+    projects: '**/aspnet-core-dotnet-core.UnitTests/*.UnitTests.csproj'
     arguments: '--configuration Release'
