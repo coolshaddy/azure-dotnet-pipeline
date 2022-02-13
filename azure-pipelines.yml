@@ -62,5 +62,5 @@ steps:
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact'
   inputs:
-    pathtoPublish: '$(build.artifactstagingdirectory)\app\application.zip' #Publish (different from the command used above) allows the artifact to be used in later jobs
+    pathtoPublish: '$(build.artifactstagingdirectory)' #Publish (different from the command used above) allows the artifact to be used in later jobs
     artifactName: 'app' 
