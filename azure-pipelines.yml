@@ -51,4 +51,10 @@ steps:
     command: publish
     projects: '$(solution)'
     arguments: '--configuration Release --output $(build.artifactstagingdirectory)/application'
-    
+
+- task: DotNetCoreCLI@2
+  displayName: Test
+  inputs:
+    command: test #Don't forget to test!
+    projects: '**/*.Tests.csproj'
+    arguments: '--configuration Release'
