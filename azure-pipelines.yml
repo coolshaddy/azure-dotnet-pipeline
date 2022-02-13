@@ -45,3 +45,10 @@ steps:
     downloadType: 'single'
     artifactName: 'AEYCBuild'
     downloadPath: '$(System.ArtifactsDirectory)'
+- task: DotNetCoreCLI@2
+  displayName: Publish App
+  inputs:
+    command: publish
+    projects: '$(solution)'
+    arguments: '--configuration Release --output $(build.artifactstagingdirectory)/application'
+    
