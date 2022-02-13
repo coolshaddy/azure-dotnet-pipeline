@@ -58,3 +58,9 @@ steps:
     command: test #Don't forget to test!
     projects: '**/aspnet-core-dotnet-core.UnitTests/*.UnitTests.csproj'
     arguments: '--configuration Release'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    pathtoPublish: '$(build.artifactstagingdirectory)\app\application.zip' #Publish (different from the command used above) allows the artifact to be used in later jobs
+    artifactName: 'app' 
