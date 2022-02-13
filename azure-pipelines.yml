@@ -56,7 +56,7 @@ steps:
   displayName: Test
   inputs:
     command: test #Don't forget to test!
-    projects: '**/aspnet-core-dotnet-core.UnitTests/*.UnitTests.csproj'
+    projects: '**/*.Tests.csproj'
     arguments: '--configuration Release'
 
 - task: PublishBuildArtifacts@1
