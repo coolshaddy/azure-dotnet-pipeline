@@ -29,7 +29,7 @@ stages:
     - task: DotNetCoreInstaller@1
       displayName: 'Use DotNet Core SDK'
       inputs:
-        version: 3.x
+        version: 5.x
 
     - task: DotNetCoreCLI@2
       displayName: Publish App
