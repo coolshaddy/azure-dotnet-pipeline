@@ -44,7 +44,7 @@ stages:
       displayName: Test
       inputs:
         command: test #Don't forget to test!
-        projects: '**/BasicCoreApp/*.UnitTests.csproj'
+        projects: '**/aspnet-core-dotnet-core.UnitTests/aspnet-core-dotnet-core.UnitTests.csproj'
         arguments: '--configuration $(BuildConfiguration)'
 
     - task: ArchiveFiles@2
