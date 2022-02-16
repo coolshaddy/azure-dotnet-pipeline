@@ -15,7 +15,7 @@ name: $(Year:yy).$(Month).$(DayOfMonth).$(BuildID)-$(SourceBranchName)
 variables:
   AgentImage: "windows-latest" #See available agent images: https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
   system.debug: true #Setting debug to true will add extra output to the logs but can be useful while trying to determine full reason for failures
-  BuildConfiguration: 'Release'
+  BuildConfiguration: 'Release build'
 
 stages:
 - stage: 'Build_Stage' #Stage name cannot have spaces
